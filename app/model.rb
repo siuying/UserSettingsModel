@@ -9,23 +9,21 @@ module Model
     end
 
     def _id
-      @_id
+      @data[:_id]
     end
     
     def _id=(id)
-      @_id = id
+      @data[:_id] = id
     end
     
     def save
       table = Array.new(self.class.table)
-      
       if self._id != nil
         table[self._id] = self.data
       else
         table << self.data
-    		self._id = table.count
+    		self._id = self.class.next_key
       end
-
       self.class.table = table
     end
   
@@ -35,15 +33,15 @@ module Model
       self.class.table = table
     end
     
-    def method_missing(name, *args)
-      matched = name.to_s.match(/^([^=]+)(=)?$/)
+    def method_missing(method, *args)
+      matched = method.to_s.match(/^([^=]+)(=)?$/)
       name = matched[1]
       modifier = matched[2]
-      if self.class.attributes.include?(name.to_sym)
+      if self.class.attributes.include?(name.to_sym) || name == "_id"
         if modifier == "="
-          self.data[name] = args[0]
+          self.data[name.to_sym] = args[0]
         else
-          self.data[name]
+          self.data[name.to_sym]
         end
       else
         super
@@ -66,11 +64,25 @@ module Model
     end
     
     def key
-      "model." + self.description
+      @key ||= "model." + self.description
+    end
+    
+    def max_key
+      @max_key ||= self.key + ".max"
     end
     
     def clear
-      self.table = []
+      self.settings[max_key] = nil
+      self.settings[self.key] = nil
+      self
+    end
+
+    def next_key
+      if self.settings[max_key]
+        self.settings[max_key] = self.settings[max_key] + 1        
+      else
+        self.settings[max_key] = 0
+      end
     end
     
     def get(id)
@@ -79,7 +91,14 @@ module Model
       data.each do |key, value|
         obj.send("#{key}=".to_sym, value)
       end
+      obj._id = data[:_id]
       obj
+    end
+    
+    def all
+      self.table.collect do |item|
+        get(item[:_id])
+      end
     end
 
     def table

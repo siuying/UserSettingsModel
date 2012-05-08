@@ -5,7 +5,7 @@ describe Model do
     attribute :age
   end
   
-  before do
+  after do
     User.clear
   end
   
@@ -19,6 +19,12 @@ describe Model do
   
   it "should have settings" do
     User.settings.should == NSUserDefaults.standardUserDefaults
+  end
+
+  it "should have next_key" do
+    User.next_key.should == 0
+    User.next_key.should == 1
+    User.next_key.should == 2
   end
   
   it "should have table" do
@@ -40,7 +46,42 @@ describe Model do
     User.table.count.should == 2
     User.get(0).name.should == "Bob"
     User.get(0).age.should == 18
+    User.get(0)._id.should == 0
     User.get(1).name.should == "Alice"
     User.get(1).age.should == 20
+    User.get(1)._id.should == 1
   end
+
+  it "should find user by criteria" do
+    user = User.new
+    user.name = "Bob"
+    user.age = 18
+    user.save
+    
+    user2 = User.new
+    user2.name = "Alice"
+    user2.age = 20
+    user2.save
+    
+    user3 = User.new
+    user3.name = "Carl"
+    user3.age = 22
+    user3.save
+  
+    results = User.all.select {|item| item.name == "Carl" }
+    results.count.should == 1
+    results.first.should == user3
+  end
+
+  # it "should clear model" do
+  #   user = User.new
+  #   user.name = "Bob"
+  #   user.age = 18
+  #   user.save
+  # 
+  #   User.table.count.should == 1
+  #   User.clear
+  #   User.table.count.should == 0
+  # end
+  
 end
