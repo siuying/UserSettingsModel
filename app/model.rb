@@ -104,7 +104,7 @@ module Model
     end
     
     def all
-      @table.collect do |item|
+      table.collect do |item|
         get(item[:_id])
       end
     end
