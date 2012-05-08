@@ -17,18 +17,21 @@ module Model
     end
     
     def save
-      table = Array.new(self.class.table)
+      table = self.class.table
       if self._id != nil
         table[self._id] = self.data
       else
+        table = Array.new(table)
         table << self.data
     		self._id = self.class.next_key
       end
       self.class.table = table
+      self
     end
   
     def destroy
-      table = self.class.table
+      @data = nil
+      table = Array.new(self.class.table)
       table.delete_at(self._id) if self._id
       self.class.table = table
     end
@@ -64,16 +67,17 @@ module Model
     end
     
     def key
-      @key ||= "model." + self.description
+      "model.#{self.description}"
     end
     
     def max_key
-      @max_key ||= self.key + ".max"
+      "#{self.key}.max"
     end
     
     def clear
-      self.settings[max_key] = nil
-      self.settings[self.key] = nil
+      settings.removeObjectForKey(max_key)
+      settings.removeObjectForKey(key)
+      settings.synchronize
       self
     end
 
@@ -87,16 +91,20 @@ module Model
     
     def get(id)
       data = self.settings[self.key][id]
-      obj = self.new
-      data.each do |key, value|
-        obj.send("#{key}=".to_sym, value)
+      if data
+        obj = self.new
+        data.each do |key, value|
+          obj.send("#{key}=".to_sym, value)
+        end
+        obj._id = data[:_id]
+        obj
+      else
+        nil
       end
-      obj._id = data[:_id]
-      obj
     end
     
     def all
-      self.table.collect do |item|
+      @table.collect do |item|
         get(item[:_id])
       end
     end
