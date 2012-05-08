@@ -4,6 +4,8 @@ UserSettingsModel use NSUserSettings to store model data.
 
 This is designed to store small amount of data, and when performance is not an issue.
 
+WARNING: This is highly experimental and not even pass the test (memory error from motion), use at your own risk.
+
 ## Define Model
 
 Define your class as you would normally do. Include the Model module.
