@@ -1,6 +1,6 @@
-describe Model do  
+describe UserSettingsModel do  
   class User
-    include Model
+    include UserSettingsModel
     attribute :name
     attribute :age
   end
@@ -58,55 +58,55 @@ describe Model do
     users[1]._id.should == user2._id
   end
 
-  # it "should delete user" do
-  #   user = User.new
-  #   user.name = "Bob"
-  #   user.age = 18
-  #   user.save
-  #   
-  #   User.table.count.should == 1
-  #   User.destroy
-  #   User.table.count.should == 0
-  # 
-  #   user2 = User.new
-  #   user2.name = "Alice"
-  #   user2.age = 20
-  #   user2.save
-  #   User.table.count.should == 1
-  #   User.all.first._id.should == user2.id
-  # end
+  it "should delete user" do
+    user = User.new
+    user.name = "Bob"
+    user.age = 18
+    user.save
+    
+    User.table.count.should == 1
+    User.delete
+    User.table.count.should == 0
+  
+    user2 = User.new
+    user2.name = "Alice"
+    user2.age = 20
+    user2.save
+    User.table.count.should == 1
+    User.all.first._id.should == user2.id
+  end
 
-  # it "should find user by criteria" do
-  #   user = User.new
-  #   user.name = "Bob"
-  #   user.age = 18
-  #   user.save
-  #   
-  #   user2 = User.new
-  #   user2.name = "Alice"
-  #   user2.age = 20
-  #   user2.save
-  #   
-  #   user3 = User.new
-  #   user3.name = "Carl"
-  #   user3.age = 22
-  #   user3.save
-  # 
-  #   User.all.count.should == 3
-  #   results = User.all.select {|item| item.name == "Carl" }
-  #   results.count.should == 1
-  #   results.first._id.should == user3._id
-  # end
-    # 
-    # it "should clear model" do
-    #   user = User.new
-    #   user.name = "Bob"
-    #   user.age = 18
-    #   user.save
-    # 
-    #   User.table.count.should == 1
-    #   User.clear
-    #   User.table.count.should == 0
-    # end
+  it "should find user by criteria" do
+    user = User.new
+    user.name = "Bob"
+    user.age = 18
+    user.save
+    
+    user2 = User.new
+    user2.name = "Alice"
+    user2.age = 20
+    user2.save
+    
+    user3 = User.new
+    user3.name = "Carl"
+    user3.age = 22
+    user3.save
+  
+    User.all.count.should == 3
+    results = User.all.select {|item| item.name == "Carl" }
+    results.count.should == 1
+    results.first._id.should == user3._id
+  end
+  
+  it "should clear model" do
+    user = User.new
+    user.name = "Bob"
+    user.age = 18
+    user.save
+  
+    User.table.count.should == 1
+    User.clear
+    User.table.count.should == 0
+  end
   
 end

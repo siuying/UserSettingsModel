@@ -1,4 +1,4 @@
-module Model  
+module UserSettingsModel  
   module InstanceMethods
     def data
       @data ||= {}
@@ -29,7 +29,7 @@ module Model
       self
     end
   
-    def destroy
+    def delete
       @data = nil
       table = Array.new(self.class.table)
       table.delete_at(self._id) if self._id
